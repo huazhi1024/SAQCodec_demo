@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAQCodec - Speech Compression Demo</title>
+  <style>
+    :root {
+      --primary: #1f4e79;
+      --primary-light: #2c6bb3;
+      --secondary: #3a86ff;
+      --accent: #ff6b6b;
+      --light-bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
+      --text: #333333;
+      --text-light: #666666;
+      --text-lighter: #888888;
+      --shadow: rgba(0,0,0,0.08);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+      background-color: var(--light-bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 40px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), #0d2b4e);
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: "";
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 150px;
+      height: 150px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: -30px;
+      right: -30px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0.9;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      padding: 0 20px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px var(--shadow);
+      margin-bottom: 30px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .card-header {
+      background: linear-gradient(to right, rgba(31, 78, 121, 0.9), rgba(31, 78, 121, 0.7));
+      color: white;
+      padding: 18px 25px;
+      font-size: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-header i {
+      margin-right: 10px;
+      font-size: 22px;
+    }
+    
+    .card-content {
+      padding: 25px;
+    }
+    
+    .abstract {
+      background: rgba(31, 78, 121, 0.03);
+      border-left: 4px solid var(--primary);
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .abstract p {
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    
+    .figure-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    .figure-container embed {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      max-width: 100%;
+    }
+    
+    .category-section {
+      margin-bottom: 50px;
+    }
+    
+    .section-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border);
+    }
+    
+    .section-title h2 {
+      font-size: 22px;
+      color: var(--primary);
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-title h2::before {
+      content: "•";
+      color: var(--secondary);
+      margin-right: 10px;
+      font-size: 28px;
+      line-height: 0;
+    }
+    
+    .bitrate-badge {
+      background: var(--primary-light);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-left: 15px;
+    }
+    
+    .group-control {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 25px 0;
+      gap: 15px;
+    }
+    
+    .group-control button {
+      padding: 10px 25px;
+      font-size: 15px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      box-shadow: 0 4px 8px rgba(31, 78, 121, 0.2);
+    }
+    
+    .group-control button:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(31, 78, 121, 0.25);
+    }
+    
+    .group-control button:active {
+      transform: translateY(0);
+    }
+    
+    .group-control button i {
+      margin-right: 8px;
+    }
+    
+    .group-info {
+      background: rgba(31, 78, 121, 0.1);
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--primary);
+      min-width: 180px;
+      text-align: center;
+    }
+    
+    .group {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .active {
+      display: block;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    thead {
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+    }
+    
+    th {
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    tbody tr:nth-child(even) {
+      background-color: rgba(31, 78, 121, 0.03);
+    }
+    
+    td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .model-id {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 15px;
+    }
+    
+    .ours-badge {
+      background: linear-gradient(to right, #ff6b6b, #e44d4d);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 5px;
+    }
+    
+    audio {
+      width: 100%;
+      max-width: 300px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    audio:hover {
+      transform: scale(1.02);
+    }
+    
+    audio::-webkit-media-controls-panel {
+      background-color: #f1f3f4;
+      border-radius: 8px;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+      margin-top: 15px;
+      font-style: italic;
+      text-align: center;
+      padding: 10px;
+      background: rgba(31, 78, 121, 0.05);
+      border-radius: 6px;
+      position: relative;
+      padding-left: 35px;
+    }
+    
+    .subtitle::before {
+      content: "\f075";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--primary-light);
+    }
+    
+    .speech-icon {
+      display: inline-block;
+      background: var(--secondary);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-light);
+      font-size: 14px;
+      padding: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 24px;
+      }
+      
+      .card-header {
+        font-size: 18px;
+        padding: 15px;
+      }
+      
+      .group-control {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .group-control button {
+        width: 100%;
+        max-width: 280px;
+      }
+      
+      th, td {
+        padding: 12px 10px;
+        font-size: 14px;
+      }
+      
+      .section-title h2 {
+        font-size: 19px;
+      }
+    }
+  </style>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <h1>Neural Speech Compression with Adaptive Progressive Residual Quantization</h1>
+    <p class="subtitle">Achieving ultra-low bitrate with high perceptual quality</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-file-alt"></i> Abstract
+    </div>
+    <div class="card-content">
+      <div class="abstract">
+        <p>This paper proposes a neural speech codec that achieves ultra-low bitrate with high perceptual quality. We introduce Adaptive Progressive Residual Vector Quantization (APRVQ), which enables efficient entropy control while preserving fine-grained details. Our model is evaluated on multiple bitrates and demonstrates state-of-the-art performance.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-project-diagram"></i> Model Architecture
+    </div>
+    <div class="card-content">
+      <div class="figure-container">
+        <embed src="imgs/mainarch-v20250807-crop.pdf" type="application/pdf" width="90%" height="500px">
+      </div>
+    </div>
+  </div>
+
+  <section class="category-section" id="section-1kbps">
+    <div class="section-title">
+      <h2>Speech Samples Comparison <span class="bitrate-badge">~1 kbps</span></h2>
+    </div>
+    
+    <div class="group-control">
+      <button onclick="prevGroup('1kbps')">
+        <i class="fas fa-arrow-left"></i> Previous Group
+      </button>
+      <span class="group-info" id="info-1kbps"></span>
+      <button onclick="nextGroup('1kbps')">
+        Next Group <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+    <div id="groups-1kbps"></div>
+  </section>
+
+  <section class="category-section" id="section-0_5kbps">
+    <div class="section-title">
+      <h2>Speech Samples Comparison <span class="bitrate-badge">~0.5 kbps</span></h2>
+    </div>
+    
+    <div class="group-control">
+      <button onclick="prevGroup('0_5kbps')">
+        <i class="fas fa-arrow-left"></i> Previous Group
+      </button>
+      <span class="group-info" id="info-0_5kbps"></span>
+      <button onclick="nextGroup('0_5kbps')">
+        Next Group <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+    <div id="groups-0_5kbps"></div>
+  </section>
+
+  <section class="category-section" id="section-0_3kbps">
+    <div class="section-title">
+      <h2>Speech Samples Comparison <span class="bitrate-badge">~0.3 kbps</span></h2>
+    </div>
+    
+    <div class="group-control">
+      <button onclick="prevGroup('0_3kbps')">
+        <i class="fas fa-arrow-left"></i> Previous Group
+      </button>
+      <span class="group-info" id="info-0_3kbps"></span>
+      <button onclick="nextGroup('0_3kbps')">
+        Next Group <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+    <div id="groups-0_3kbps"></div>
+  </section>
+</main>
+
+<footer>
+  <p>SAQCodec Speech Compression Demo &copy; 2025 | Neural Speech Research</p>
+</footer>
+
+<script>
+  const audioData = {
+    '1kbps': [
+      {
+        groupName: "Group 1 (Bitrate: ~1000bps)",
+        refAudio: "audio/GT/GT_testAditi-snips-test-288.wav",
+        refSubtitle: "What is the forecast for starting at 3 a.m. in Dubults for wrong weather?",
+        models: [
+          { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_testAditi-snips-test-288.wav" },
+          { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_testAditi-snips-test-288.wav" },
+          { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_testAditi-snips-test-288.wav" },
+          { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_testAditi-snips-test-288.wav" },
+          { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_testAditi-snips-test-288.wav" },
+          { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-288.wav", ours: true },
+        ]
+      },
+
+      // 添加更多组...
+    {
+    groupName: "Group2 (Bitrate: ~1000bps)", 
+    refAudio: "audio/GT/GT_testAditi-snips-test-531.wav",
+    refSubtitle: "Look for the television show me the prince", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_testAditi-snips-test-531.wav" },
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_testAditi-snips-test-531.wav" },
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_testAditi-snips-test-531.wav" },
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_testAditi-snips-test-531.wav"},
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_testAditi-snips-test-531.wav"},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-531.wav" },
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group3 (Bitrate: ~1000bps)", //
+    refAudio: "audio/GT/GT_testAditi-snips-test-580.wav",
+    refSubtitle: "Please find me the journal of the british astronomical association movie.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_testAditi-snips-test-580.wav" ,},
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_testAditi-snips-test-580.wav", },
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_testAditi-snips-test-580.wav" ,},
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_testAditi-snips-test-580.wav" ,},
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_testAditi-snips-test-580.wav" ,},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-580.wav", },
+      
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group4 (Bitrate: ~1000bps)", // 
+    refAudio: "audio/GT/GT_test_clean_1320-122612-0007.wav",
+    refSubtitle: "Chingachgook had caught the look, and motioning with his hand, he bade him speak.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps" , path: "audio/recon/EnCodec/1k/EC1k_test_clean_1320-122612-0007.wav", },
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_test_clean_1320-122612-0007.wav", },
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_test_clean_1320-122612-0007.wav" ,},
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_test_clean_1320-122612-0007.wav" ,},
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_test_clean_1320-122612-0007.wav", },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_1320-122612-0007.wav", },
+
+ 
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group5 (Bitrate: ~1000bps)", // 
+    refAudio: "audio/GT/GT_test_clean_7729-102255-0036.wav",
+    refSubtitle: "He planted a company before the hotel and demanded a surrender of the arms belonging to the Free State Military Companies.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_test_clean_7729-102255-0036.wav" ,},
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_test_clean_7729-102255-0036.wav", },
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_test_clean_7729-102255-0036.wav", },
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_test_clean_7729-102255-0036.wav", },
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_test_clean_7729-102255-0036.wav", },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_7729-102255-0036.wav", },
+     
+     
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group6 (Bitrate: ~1000bps)", // 
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Could you increase the heating?", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+
+     
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group7 (Bitrate: ~1000bps)", //
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Okay, now switch the main language to Korean.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+
+      
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group8 (Bitrate: ~1000bps)", // 
+    refAudio: "audio/GT/GT_260-123286-0028.wav",
+    refSubtitle: "Its jaw is enormous and according to naturalists it is armed with no less than one hundred and eighty two teeth.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@1kbps", path: "audio/recon/EnCodec/1k/EC1k_260-123286-0028.flac" ,},
+      { id: "HiFiCodec@1kbps", path: "audio/recon/HC/1k/HC1k_260-123286-0028.flac" ,},
+      { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_260-123286-0028.flac" ,},
+      { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_260-123286-0028.flac" ,},
+      { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_260-123286-0028.flac" ,},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_260-123286-0028.flac" ,},
+ 
+      // 添加更多模型音频...
+    ]
+  },
+
+    ],
+
+
+    '0_5kbps': [
+      {
+        groupName: "Group 1 (Bitrate: ~500bps)",
+        refAudio: "audio/GT/GT_testAditi-snips-test-288.wav",
+        refSubtitle: "What is the forecast for starting at 3 a.m. in Dubults for wrong weather?",
+        models: [
+          { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_testAditi-snips-test-288.wav" },
+          { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_testAditi-snips-test-288.wav" },
+          { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_testAditi-snips-test-288.wav" },
+          { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_testAditi-snips-test-288.wav" },
+          { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-288.wav", ours: true },
+        ]
+      },
+
+      // ////////////////~500bps(ETDSO3G)//////////////////////////////
+
+  {
+    groupName: "Group2 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_testAditi-snips-test-531.wav",
+    refSubtitle: "Look for the television show me the prince", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_testAditi-snips-test-531.wav" ,},
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_testAditi-snips-test-531.wav", },
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_testAditi-snips-test-531.wav", },
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_testAditi-snips-test-531.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-531.wav", },
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group3 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_testAditi-snips-test-580.wav",
+    refSubtitle: "Please find me the journal of the british astronomical association movie.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_testAditi-snips-test-580.wav" ,},
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_testAditi-snips-test-580.wav" ,},
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_testAditi-snips-test-580.wav" ,},
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_testAditi-snips-test-580.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-580.wav" ,},
+
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group4 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_test_clean_1320-122612-0007.wav",
+    refSubtitle: "Chingachgook had caught the look, and motioning with his hand, he bade him speak.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_test_clean_1320-122612-0007.wav" ,},
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_test_clean_1320-122612-0007.wav" ,},
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_test_clean_1320-122612-0007.wav" ,},
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_test_clean_1320-122612-0007.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_1320-122612-0007.wav", },
+
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group5 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_test_clean_7729-102255-0036.wav",
+    refSubtitle: "He planted a company before the hotel and demanded a surrender of the arms belonging to the Free State Military Companies.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_test_clean_7729-102255-0036.wav", },
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_test_clean_7729-102255-0036.wav", },
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_test_clean_7729-102255-0036.wav", },
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_test_clean_7729-102255-0036.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_7729-102255-0036.wav", },
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group6 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Could you increase the heating?", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+
+      // // 添加更多模型音频...
+    ]
+  },
+  {
+    groupName: "Group7 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Okay, now switch the main language to Korean.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group8 (Bitrate: ~500bps)", // 
+    refAudio: "audio/GT/GT_260-123286-0028.wav",
+    refSubtitle: "Its jaw is enormous and according to naturalists it is armed with no less than one hundred and eighty two teeth.", // 新增字幕字段
+    models: [
+      { id: "EnCodec@0.5kbps", path: "audio/recon/EnCodec/0.5k/EC0.5k_260-123286-0028.flac", },
+      { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_260-123286-0028.flac" ,},
+      { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_260-123286-0028.flac" ,},
+      { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_260-123286-0028.flac" ,},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_260-123286-0028.flac", },
+
+      // 添加更多模型音频...
+    ]
+  },
+
+
+
+
+    ],
+
+    //////////////////////////////////////////////////////////
+    '0_3kbps': [
+      {
+        groupName: "Group 1 (Bitrate: ~300bps)",
+        refAudio: "audio/GT/GT_testAditi-snips-test-288.wav",
+        refSubtitle: "What is the forecast for starting at 3 a.m. in Dubults for wrong weather?",
+        models: [
+          { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_testAditi-snips-test-288.wav" },
+          { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-288.wav", ours: true },
+          { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_testAditi-snips-test-288.wav" },
+          { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-288.wav", ours: true },
+        ]
+      },
+
+      {
+    groupName: "Group2 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_testAditi-snips-test-531.wav",
+    refSubtitle: "Look for the television show me the prince", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_testAditi-snips-test-531.wav", },
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-531.wav", },
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_testAditi-snips-test-531.wav", },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-531.wav", },
+  
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group3 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_testAditi-snips-test-580.wav",
+    refSubtitle: "Please find me the journal of the british astronomical association movie.", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_testAditi-snips-test-580.wav", },
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-580.wav", },
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_testAditi-snips-test-580.wav", },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-580.wav", },
+      ///////////////////////////////////////////////////////////////////////////////////////////
+      // { id: 5, path: "audio/speex/3000bps/GT_testAditi-snips-test-580.wav",hidden_method: "M16" },
+      // { id: 6, path: "audio/GT/GT_testAditi-snips-test-580.wav" ,hidden_method: "M0"},
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group4 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_test_clean_1320-122612-0007.wav",
+    refSubtitle: "Chingachgook had caught the look, and motioning with his hand, he bade him speak.", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_test_clean_1320-122612-0007.wav" ,},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_1320-122612-0007.wav", },
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_test_clean_1320-122612-0007.wav" ,},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_1320-122612-0007.wav", },
+      // 添加更多模型音频...
+    ]
+  },
+  
+  {
+    groupName: "Group5 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_test_clean_7729-102255-0036.wav",
+    refSubtitle: "He planted a company before the hotel and demanded a surrender of the arms belonging to the Free State Military Companies.", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_test_clean_7729-102255-0036.wav", },
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_7729-102255-0036.wav", },
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_test_clean_7729-102255-0036.wav", },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_7729-102255-0036.wav", },
+     
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group6 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Could you increase the heating?", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
+      
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group7 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav",
+    refSubtitle: "Okay, now switch the main language to Korean.", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
+      // 添加更多模型音频...
+    ]
+  },
+
+  {
+    groupName: "Group8 (Bitrate: ~300bps)", // 
+    refAudio: "audio/GT/GT_260-123286-0028.wav",
+    refSubtitle: "Its jaw is enormous and according to naturalists it is armed with no less than one hundred and eighty two teeth.", // 新增字幕字段
+    models: [
+      { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_260-123286-0028.flac" ,},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_260-123286-0028.flac" ,},
+      { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_260-123286-0028.flac", },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_260-123286-0028.flac", },
+      // 添加更多模型音频...
+    ]
+  },
+
+  
+    ]
+  };
+
+  const categories = ['1kbps', '0_5kbps', '0_3kbps'];
+  let groupIndices = { '1kbps': 0, '0_5kbps': 0, '0_3kbps': 0 };
+
+  // Initialize audio players
+  categories.forEach(cat => {
+    const container = document.getElementById('groups-' + cat);
+    const groups = audioData[cat] || [];
+    
+    groups.forEach((group, g) => {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'group' + (g === 0 ? ' active' : '');
+      groupDiv.id = `${cat}-group-${g + 1}`;
+      groupDiv.innerHTML = `
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-microphone-alt"></i> ${group.groupName}
+          </div>
+          <div class="card-content">
+            <table>
+              <thead>
+                <tr>
+                  <th width="25%">Model</th>
+                  <th width="75%">Speech Sample</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Ground Truth</b></td>
+                  <td>
+                    <audio controls src="${group.refAudio}"></audio>
+                    <div class="subtitle">${group.refSubtitle}</div>
+                  </td>
+                </tr>
+                ${group.models.map(model => `
+                  <tr>
+                    <td class="model-id">
+                      ${model.id}
+                      ${model.ours ? '<span class="ours-badge">OURS</span>' : ''}
+                    </td>
+                    <td><audio controls src="${model.path}"></audio></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      container.appendChild(groupDiv);
+    });
+    
+    updateGroupDisplay(cat);
+  });
+
+  function updateGroupDisplay(cat) {
+    const groups = audioData[cat] || [];
+    for (let g = 1; g <= groups.length; g++) {
+      const groupEl = document.getElementById(`${cat}-group-${g}`);
+      if (groupEl) {
+        groupEl.style.display = (groupIndices[cat] + 1 === g) ? 'block' : 'none';
+      }
+    }
+    document.getElementById(`info-${cat}`).textContent = 
+      `Group ${groupIndices[cat] + 1} of ${groups.length}`;
+  }
+
+  function nextGroup(cat) {
+    const groups = audioData[cat] || [];
+    if (groupIndices[cat] < groups.length - 1) {
+      groupIndices[cat]++;
+      updateGroupDisplay(cat);
+    }
+  }
+
+  function prevGroup(cat) {
+    if (groupIndices[cat] > 0) {
+      groupIndices[cat]--;
+      updateGroupDisplay(cat);
+    }
+  }
+</script>
+
+</body>
+</html>
