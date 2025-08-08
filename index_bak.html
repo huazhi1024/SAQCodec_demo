@@ -234,25 +234,18 @@
       text-align: center;
     }
     
-    .groups-container {
-      position: relative;
-      min-height: 500px; /* 保证足够高度避免跳动 */
-    }
-    
     .group {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      display: none;
+      animation: fadeIn 0.5s ease;
     }
     
-    .group.active {
-      position: relative;
-      opacity: 1;
-      visibility: visible;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .active {
+      display: block;
     }
     
     table {
@@ -397,27 +390,18 @@
       .section-title h2 {
         font-size: 19px;
       }
-      
-      .groups-container {
-        min-height: 600px; /* 移动端需要更多空间 */
-      }
     }
   </style>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-
-<!-- 以上是CCS设置 -->
-
-<!-- 以下是正式页面内容 -->
+<!-- 以上是CCS特性 ，下面开始才是页面显示的正文-->
 <header>
   <div class="header-content">
-    <!-- <h1>Neural Speech Compression with Adaptive Progressive Residual Quantization</h1> -->
     <h1>SAQCodec: Achieving High Signal-level and Application-level Performance in Ultra-Low Bitrates</h1>
     <!-- <p class="subtitle">Achieving ultra-low bitrate with high perceptual quality</p> -->
   </div>
 </header>
-
 <!-- 以下是摘要 -->
 <main>
   <div class="card">
@@ -431,8 +415,7 @@
       </div>
     </div>
   </div>
-
-  <!-- 以下是架构图 -->
+<!-- 以下是架构图 -->
   <div class="card">
     <div class="card-header">
       <i class="fas fa-project-diagram"></i> Model Architecture
@@ -458,7 +441,7 @@
         Next Group <i class="fas fa-arrow-right"></i>
       </button>
     </div>
-    <div class="groups-container" id="groups-1kbps"></div>
+    <div id="groups-1kbps"></div>
   </section>
 
   <section class="category-section" id="section-0_5kbps">
@@ -475,7 +458,7 @@
         Next Group <i class="fas fa-arrow-right"></i>
       </button>
     </div>
-    <div class="groups-container" id="groups-0_5kbps"></div>
+    <div id="groups-0_5kbps"></div>
   </section>
 
   <section class="category-section" id="section-0_3kbps">
@@ -492,7 +475,7 @@
         Next Group <i class="fas fa-arrow-right"></i>
       </button>
     </div>
-    <div class="groups-container" id="groups-0_3kbps"></div>
+    <div id="groups-0_3kbps"></div>
   </section>
 </main>
 
@@ -528,7 +511,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_testAditi-snips-test-531.wav" },
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_testAditi-snips-test-531.wav"},
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_testAditi-snips-test-531.wav"},
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-531.wav",ours: true },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-531.wav" },
       // 添加更多模型音频...
     ]
   },
@@ -543,7 +526,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_testAditi-snips-test-580.wav" ,},
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_testAditi-snips-test-580.wav" ,},
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_testAditi-snips-test-580.wav" ,},
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-580.wav", ours: true},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_testAditi-snips-test-580.wav", },
       
       // 添加更多模型音频...
     ]
@@ -559,7 +542,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_test_clean_1320-122612-0007.wav" ,},
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_test_clean_1320-122612-0007.wav" ,},
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_test_clean_1320-122612-0007.wav", },
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_1320-122612-0007.wav",ours: true },
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_1320-122612-0007.wav", },
 
  
       // 添加更多模型音频...
@@ -576,7 +559,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_test_clean_7729-102255-0036.wav", },
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_test_clean_7729-102255-0036.wav", },
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_test_clean_7729-102255-0036.wav", },
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_7729-102255-0036.wav", ours: true},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_test_clean_7729-102255-0036.wav", },
      
      
       // 添加更多模型音频...
@@ -593,7 +576,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,ours: true},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
 
      
       // 添加更多模型音频...
@@ -610,7 +593,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,ours: true},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
 
       
       // 添加更多模型音频...
@@ -627,7 +610,7 @@
       { id: "TiCodec@1kbps", path: "audio/recon/TiCodec/1k/TC1k_260-123286-0028.flac" ,},
       { id: "DAC@1kbps", path: "audio/recon/DAC/1k/DAC1k_260-123286-0028.flac" ,},
       { id: "SemantiCodec@1.25kbps", path: "audio/recon/SemantiCodec/1.25k/SC1.25k_260-123286-0028.flac" ,},
-      { id: "SAQCodec@0.97kbps", path: "audio/recon/Ours/0.97k/Ours0.97k_260-123286-0028.flac" ,ours: true},
+      { id: "SAQCodec@0.97kbps(Ours)", path: "audio/recon/Ours/0.97k/Ours0.97k_260-123286-0028.flac" ,},
  
       // 添加更多模型音频...
     ]
@@ -661,7 +644,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_testAditi-snips-test-531.wav", },
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_testAditi-snips-test-531.wav", },
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_testAditi-snips-test-531.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-531.wav", ours: true },
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-531.wav", },
       // 添加更多模型音频...
     ]
   },
@@ -675,7 +658,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_testAditi-snips-test-580.wav" ,},
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_testAditi-snips-test-580.wav" ,},
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_testAditi-snips-test-580.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-580.wav" , ours: true},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_testAditi-snips-test-580.wav" ,},
 
       // 添加更多模型音频...
     ]
@@ -690,7 +673,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_test_clean_1320-122612-0007.wav" ,},
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_test_clean_1320-122612-0007.wav" ,},
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_test_clean_1320-122612-0007.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_1320-122612-0007.wav",ours: true },
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_1320-122612-0007.wav", },
 
       // 添加更多模型音频...
     ]
@@ -705,7 +688,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_test_clean_7729-102255-0036.wav", },
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_test_clean_7729-102255-0036.wav", },
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_test_clean_7729-102255-0036.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_7729-102255-0036.wav", ours: true },
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_test_clean_7729-102255-0036.wav", },
       // 添加更多模型音频...
     ]
   },
@@ -719,7 +702,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", ours: true},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
 
       // // 添加更多模型音频...
     ]
@@ -733,7 +716,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav",ours: true },
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav", },
       // 添加更多模型音频...
     ]
   },
@@ -747,7 +730,7 @@
       { id: "TiCodec@0.5kbps", path: "audio/recon/TiCodec/0.5k/TC0.5k_260-123286-0028.flac" ,},
       { id: "DAC@0.5kbps", path: "audio/recon/DAC/0.5k/DAC0.5k_260-123286-0028.flac" ,},
       { id: "SemantiCodec@0.63kbps", path: "audio/recon/SemantiCodec/0.63k/SC0.63k_260-123286-0028.flac" ,},
-      { id: "SAQCodec@0.47kbps", path: "audio/recon/Ours/0.47k/Ours0.47k_260-123286-0028.flac", ours: true},
+      { id: "SAQCodec@0.47kbps(Ours)", path: "audio/recon/Ours/0.47k/Ours0.47k_260-123286-0028.flac", },
 
       // 添加更多模型音频...
     ]
@@ -778,9 +761,9 @@
     refSubtitle: "Look for the television show me the prince", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_testAditi-snips-test-531.wav", },
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-531.wav", ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-531.wav", },
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_testAditi-snips-test-531.wav", },
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-531.wav",ours: true },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-531.wav", },
   
       // 添加更多模型音频...
     ]
@@ -792,11 +775,12 @@
     refSubtitle: "Please find me the journal of the british astronomical association movie.", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_testAditi-snips-test-580.wav", },
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-580.wav",ours: true },
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_testAditi-snips-test-580.wav", },
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_testAditi-snips-test-580.wav", },
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-580.wav",ours: true },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_testAditi-snips-test-580.wav", },
       ///////////////////////////////////////////////////////////////////////////////////////////
-
+      // { id: 5, path: "audio/speex/3000bps/GT_testAditi-snips-test-580.wav",hidden_method: "M16" },
+      // { id: 6, path: "audio/GT/GT_testAditi-snips-test-580.wav" ,hidden_method: "M0"},
       // 添加更多模型音频...
     ]
   },
@@ -807,9 +791,9 @@
     refSubtitle: "Chingachgook had caught the look, and motioning with his hand, he bade him speak.", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_test_clean_1320-122612-0007.wav" ,},
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_1320-122612-0007.wav", ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_1320-122612-0007.wav", },
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_test_clean_1320-122612-0007.wav" ,},
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_1320-122612-0007.wav", ours: true},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_1320-122612-0007.wav", },
       // 添加更多模型音频...
     ]
   },
@@ -820,9 +804,9 @@
     refSubtitle: "He planted a company before the hotel and demanded a surrender of the arms belonging to the Free State Military Companies.", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_test_clean_7729-102255-0036.wav", },
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_7729-102255-0036.wav", ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_test_clean_7729-102255-0036.wav", },
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_test_clean_7729-102255-0036.wav", },
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_7729-102255-0036.wav",ours: true },
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_test_clean_7729-102255-0036.wav", },
      
       // 添加更多模型音频...
     ]
@@ -834,9 +818,9 @@
     refSubtitle: "Could you increase the heating?", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", ours: true},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_1f3fba10-4632-11e9-bc65-55b32b211b66.wav", },
       
       // 添加更多模型音频...
     ]
@@ -848,9 +832,9 @@
     refSubtitle: "Okay, now switch the main language to Korean.", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,ours: true},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_wavs_speakers_7NqqnAOPVVSKnxyv_e3bd7690-4630-11e9-bc65-55b32b211b66.wav" ,},
       // 添加更多模型音频...
     ]
   },
@@ -861,9 +845,9 @@
     refSubtitle: "Its jaw is enormous and according to naturalists it is armed with no less than one hundred and eighty two teeth.", // 新增字幕字段
     models: [
       { id: "SemantiCodec@0.31kbps", path: "audio/recon/SemantiCodec/0.31k/SC0.31k_260-123286-0028.flac" ,},
-      { id: "SAQCodec@0.3kbps", path: "audio/recon/Ours/0.3k/Ours0.3k_260-123286-0028.flac" ,ours: true},
+      { id: "SAQCodec@0.3kbps(Ours)", path: "audio/recon/Ours/0.3k/Ours0.3k_260-123286-0028.flac" ,},
       { id: "SemantiCodec@0.35kbps", path: "audio/recon/SemantiCodec/0.35k/SC0.35k_260-123286-0028.flac", },
-      { id: "SAQCodec@0.35kbps", path: "audio/recon/Ours/0.35k/Ours0.35k_260-123286-0028.flac", ours: true},
+      { id: "SAQCodec@0.35kbps(Ours)", path: "audio/recon/Ours/0.35k/Ours0.35k_260-123286-0028.flac", },
       // 添加更多模型音频...
     ]
   },
@@ -882,7 +866,7 @@
     
     groups.forEach((group, g) => {
       const groupDiv = document.createElement('div');
-      groupDiv.className = 'group';
+      groupDiv.className = 'group' + (g === 0 ? ' active' : '');
       groupDiv.id = `${cat}-group-${g + 1}`;
       groupDiv.innerHTML = `
         <div class="card">
@@ -922,30 +906,17 @@
       container.appendChild(groupDiv);
     });
     
-    // Set first group as active
-    if (groups.length > 0) {
-      document.getElementById(`${cat}-group-1`).classList.add('active');
-    }
     updateGroupDisplay(cat);
   });
 
   function updateGroupDisplay(cat) {
     const groups = audioData[cat] || [];
-    const container = document.getElementById('groups-' + cat);
-    
-    // Hide all groups first
-    const allGroups = container.querySelectorAll('.group');
-    allGroups.forEach(group => {
-      group.classList.remove('active');
-    });
-    
-    // Show current group with smooth transition
-    const currentGroup = document.getElementById(`${cat}-group-${groupIndices[cat] + 1}`);
-    if (currentGroup) {
-      currentGroup.classList.add('active');
+    for (let g = 1; g <= groups.length; g++) {
+      const groupEl = document.getElementById(`${cat}-group-${g}`);
+      if (groupEl) {
+        groupEl.style.display = (groupIndices[cat] + 1 === g) ? 'block' : 'none';
+      }
     }
-    
-    // Update group info
     document.getElementById(`info-${cat}`).textContent = 
       `Group ${groupIndices[cat] + 1} of ${groups.length}`;
   }
